@@ -1,8 +1,9 @@
 // send-song-command.mjs
 import { Relay, getPublicKey, finalizeEvent } from "nostr-tools";
+import 'dotenv/config';
 
 // ----------------- YOUR HEX PRIVATE KEY -----------------
-const myHexPrivKey = "<Your hex key>"; 
+const myHexPrivKey = process.env.NOSTR_PRIVATE_KEY; 
 // --------------------------------------------------------
 
 // Get public key directly from hex
