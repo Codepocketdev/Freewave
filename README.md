@@ -64,8 +64,9 @@ Optional / Recommended
 
 1️⃣ Clone the Repository
 
-\```git clone https://github.com/Codepocketdev/FreeWave.git
-cd FreeWave\```
+```bash 
+git clone https://github.com/Codepocketdev/FreeWave.git
+cd FreeWave```
 
 2️⃣ Install Dependencies
 
