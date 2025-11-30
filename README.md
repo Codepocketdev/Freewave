@@ -25,9 +25,7 @@ FreeWave is a lightweight, open-source ,decentralized, peer-to-peer music player
 ##  How It Works
 
 -  FreeWave monitors Nostr events that begin with a command prefix, such as:
- 
-PLAY_SONG: <song name>
-
+  PLAY_SONG: (song name and artist)
 -  Upon receiving a valid command, it:
 Securely identifies the song on YouTube.
 
