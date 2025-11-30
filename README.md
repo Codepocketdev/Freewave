@@ -45,7 +45,7 @@ To run FreeWave, ensure your environment includes:
   
 -  npm – Comes with Node.js; needed to install dependencies.
   
--  yt-dlp – Command-line tool to fetch songs from YouTube.
+-  yt-dlp – Command-line tool to fetch songs .
   
 -  mpv – Media player to play the downloaded audio locally.
   
