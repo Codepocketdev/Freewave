@@ -286,26 +286,25 @@ Bring your FreeWave node to life with real-time interaction:
 
 ## Contributing
 
-FreeWave is community-built — feel free to fork, open issues, or submit pull requests!
+-  FreeWave is community-driven — everyone is welcome to fork the repository, report issues, or submit pull requests.
 
-Ideas welcome:
+Ways to contribute:
 
-Add a GUI or web dashboard
+-  Add a GUI or web dashboard for easier control
 
-Add LED sync effects
+-  Implement LED or display sync effects for hardware setups
 
-Integrate more Nostr event types
+-  Integrate additional Nostr event types or improve the social mode
 
-Create themed hardware builds
+-  Optimize performance, caching, or cross-platform compatibility
+
+-  Create themed hardware builds or share setup guides
+
+-  Improve documentation, examples, or tutorials for new users
 
 
+We encourage experimentation and creativity — your improvements can help make FreeWave more versatile, fun, and user-friendly for everyone.
 
-
-Credits
-
-Developed by Martin Arts & contributors
-Powered by Nostr, yt-dlp, and mpv
-
-> “Let the music flow freely across the network — this is the wave of sound, not control.”
+ “Let the music flow freely across the network — this is the wave of sound, not control.”
 
 Your keys your music
