@@ -260,6 +260,10 @@ Bring your FreeWave node to life with real-time interaction:
 
 ## package.json (For Reference)
 
+-  This file defines FreeWave as a Node.js project, lists its dependencies, and provides convenient scripts for running both personal and social listening modes.
+
+-   It ensures the project is easy to install, start, and maintain.
+   
 `{
   "name": "freewave",
   "version": "1.0.0",
@@ -280,7 +284,7 @@ Bring your FreeWave node to life with real-time interaction:
 
 
 
- Contributing
+## Contributing
 
 FreeWave is community-built — feel free to fork, open issues, or submit pull requests!
 
