@@ -90,29 +90,70 @@ Install Node.js from nodejs.org.
 Download `yt-dlp.exe` and `mpv.exe` and add both to your PATH.
 
 
- Exporting Your Keys
+ ## Exporting Your Keys
+ 
+-  FreeWave never stores your keys directly inside the script. Instead, export them as environment variables to protect your privacy. You can use either your nsec key or npub key depending on your setup.
 
-To protect privacy, FreeWave never stores your keys directly inside the script.
-Instead, export them as environment variables.
+1. Using an nsec Key
 
-Example:
-
-export NOSTR_PRIVKEY_HEX="your_private_key_here"
-
-If you only have an nsec key, you can convert it to hex:
+-  If you have an nsec key, convert it to hex first:
 
 node
-> const { nip19 } = await import("nostr-tools");
-> const result = nip19.decode("nsec1yourkeyhere");
-> console.log(Buffer.from(result.data).toString("hex"));
 
-Then export the result again:
+`import { nip19 } from "nostr-tools";
+const result = nip19.decode("nsec1yourkeyhere");
+console.log(Buffer.from(result.data).toString("hex"));`
 
-export NOSTR_PRIVKEY_HEX="converted_hex_key_here"
+-  Then export the result:
 
-Now your scripts can access it automatically!
+`export NOSTR_PRIVKEY_HEX="converted_hex_key_here"`
 
 
+---
+
+2. Using an npub Key
+
+-  If you only have an npub key, you can decode it to hex using a helper script:
+
+1. Create the helper:
+
+
+
+`nano decode-npub.mjs`
+
+2. Paste the following:
+
+`#!/usr/bin/env node
+import { nip19 } from "nostr-tools";
+// Get the npub from command line
+const npub = process.argv[2];
+if (!npub) {
+  console.log("Usage: decode-npub <npub>");
+  process.exit(1);
+}
+try {
+  const { data: pubkeyHex } = nip19.decode(npub);
+  console.log(pubkeyHex);
+} catch (err) {
+  console.error("Failed to decode:", err.message);
+}`
+
+3. Run the script with your npub:
+
+
+
+`node decode-npub.mjs <npub>`
+
+4. Export the output:
+
+
+
+`export NOSTR_PUBKEY_HEX="decoded_hex_key_here"`
+
+-  Now your scripts can access the keys automatically for both personal and social listening modes.
+
+
+---
 
 
  Usage
