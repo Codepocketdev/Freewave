@@ -183,7 +183,7 @@ try {
 
 2️⃣ Social Mode (Any Nostr Client)
 
--  This mode allows you to listen to commands sent from a specific Nostr user on a chosen relay. Only new commands from that user are processed, preventing spam.
+-  This mode allows you to listen to commands sent from a specific Nostr user on a chosen relay. Only new commands from that user are processed and verified, preventing spam.
 
 `node scripts/social-listen-play.mjs <artist_npub> <relay_url>`
 
@@ -197,58 +197,70 @@ try {
 
 Folder Structure
 
-FreeWave/
+`FreeWave/
 ├── scripts/
 │   ├── send-song-command.mjs       # Personal mode: publisher
 │   ├── listen-and-play-song.mjs   # Personal mode: listener & player
 │   └── social-listen-play.mjs     # Social mode listener
 ├── package.json
 ├── .gitignore
-└── README.md
+└── README.md`
 
 
 ---
 
  ## Gadgets & Hardware Setup (Optional)
 
-You can go beyond the terminal — build your own FreeWave Node!
+-  You can take FreeWave beyond the terminal and create your own portable or interactive music node. Here’s how:
 
-Gadget	Purpose / Use
+-  Old Android Phone – Run FreeWave via Termux or Node.js as a portable Nostr node.
 
- Old Android Phone	Run FreeWave via Termux or Node.js as a portable Nostr node
- Raspberry Pi (3 or 4)	24/7 listener connected to a speaker or display
- Arduino (ESP32 / ESP8266)	Control LEDs, buttons, or visual indicators
- OLED / LCD Display	Show current track name, artist, or connection status
- Bluetooth Speaker	Wireless music playback
- RGB LEDs or Neopixels	Flash, pulse, or animate with the beat
- Powerbank or UPS	Run your setup off-grid
- WiFi Dongle / Ethernet	Ensure a stable connection
- Buttons / Rotary Knob	Control play, pause, or skip directly
- Mini Amplifier (PAM8403)	Boost small speaker setups
- 3D-Printed Case	Make your node look like a futuristic jukebox
+-  Raspberry Pi (3 or 4) – 24/7 listener connected to a speaker or display.
 
+-  Arduino / ESP32 / ESP8266 – Control LEDs, buttons, or other visual indicators.
 
+-  OLED / LCD Display – Show current track name, artist, or relay information.
 
+-  RGB LEDs or Neopixels – Flash, pulse, or animate to the music beat.
 
- How to Make It Interactive
+-  Powerbank or UPS – Run your setup off-grid.
 
-Want to bring your FreeWave to life?
+-  WiFi Dongle / Ethernet – Ensure a stable network connection.
 
-Use an ESP32 board to detect song events and light up LEDs.
+-  Buttons / Rotary Knob – Control play, pause, or skip tracks directly.
 
-Add an OLED display to show track titles and relay names.
+-  Mini Amplifier (PAM8403) – Boost small speaker setups.
 
-Control playback with buttons using simple serial commands.
+-  3D-Printed Case – Give your FreeWave node a futuristic, custom look.
 
-
-Your FreeWave becomes a smart, physical music player powered by Nostr!
 
 
 ---
 
- package.json (For Reference)
+How to Make It Interactive
 
-{
+Bring your FreeWave node to life with real-time interaction:
+
+1. Light Shows – Use an ESP32 or similar board to detect new song events and trigger LED effects.
+
+
+2. Track Display – Connect an OLED or LCD to show the current track, artist, and relay name.
+
+
+3. Physical Controls – Add buttons, knobs, or switches to control playback through simple serial commands.
+
+
+-  With these additions, FreeWave becomes a smart, physical music player powered by Nostr, combining software freedom with tangible interactivity.
+
+
+
+
+
+---
+
+## package.json (For Reference)
+
+`{
   "name": "freewave",
   "version": "1.0.0",
   "description": "Nostr-based music player that listens for song commands",
@@ -264,7 +276,7 @@ Your FreeWave becomes a smart, physical music player powered by Nostr!
   "dependencies": {
     "nostr-tools": "^2.17.2"
   }
-}
+}`
 
 
 
