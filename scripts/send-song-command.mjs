@@ -1,56 +1,128 @@
-// send-song-command.mjs
-import { Relay, getPublicKey, finalizeEvent } from "nostr-tools";
+// simple-listen-play.mjs
+import { getPublicKey, SimplePool } from "nostr-tools";
+import { execSync } from "child_process";
+import fs from "fs";
+import 'dotenv/config'; // optional: loads .env automatically if present
 
-// ----------------- YOUR HEX PRIVATE KEY -----------------
-const myHexPrivKey = "Your Hex private Key "; 
-// --------------------------------------------------------
-
-// Get public key directly from hex
-const pk = getPublicKey(myHexPrivKey);
-console.log("Using public key:", pk);
-
-// ----------------- RELAYS -----------------
-const relays = [
-  "wss://nostr.oxtr.dev/",
-  "wss://nos.lol/",
-  "wss://nostr.bitcoiner.social/",
-  "wss://nostr.mom/"
-];
-
-// ----------------- GET SONG FROM CLI -----------------
-const songQuery = process.argv[2];
-if (!songQuery) {
-  console.error("Please provide a song to play. Example:");
-  console.error("node send-song-command.mjs \"Blinding Lights by The Weeknd\"");
+// --- CONFIG ---
+const sk = process.env.NOSTR_PRIVATE_KEY;
+if (!sk) {
+  console.error("❌ Please set your NOSTR_PRIVATE_KEY environment variable!");
   process.exit(1);
 }
 
-// ----------------- BUILD THE EVENT -----------------
-const eventTemplate = {
-  kind: 1, // text note
-  created_at: Math.floor(Date.now() / 1000),
-  tags: [],
-  content: `PLAY_SONG:${songQuery}`, // prefix so script 2 knows it's a command
-  pubkey: pk
-};
+const pubkey = getPublicKey(sk);
+const LAST_PLAYED_FILE = "./last_song.txt";
 
-// Sign & finalize
-const event = finalizeEvent(eventTemplate, myHexPrivKey);
-console.log("Event ready:", { id: event.id });
+console.log("🎯 Fetching latest song command for:", pubkey);
 
-// ----------------- PUBLISH TO RELAYS -----------------
-for (const url of relays) {
-  (async () => {
-    try {
-      const relay = new Relay(url);
-      await relay.connect();
-      await relay.publish(event);
-      console.log(`🚀 Event published to ${url}`);
-      setTimeout(() => relay.close(), 1000);
-    } catch (e) {
-      console.error(`❌ Failed to publish to ${url}:`, e);
-    }
-  })();
+const relays = [
+  "wss://nostr.oxtr.dev",
+  "wss://nos.lol",
+  "wss://nostr.bitcoiner.social",
+  "wss://nostr.mom",
+];
+
+const pool = new SimplePool();
+const filter = { kinds: [1], authors: [pubkey] };
+
+// --- HELPERS ---
+function sanitizeToFilename(name) {
+  const cleaned = name.replace(/^(_?SONG:|PLAY_SONG:)/i, "").replace(/^play\s*/i, "").trim();
+  let safe = cleaned.replace(/[^\w\s-]/gi, "").replace(/\s+/g, "_");
+  if (!safe) safe = "song";
+  if (safe.length > 60) safe = safe.slice(0, 60);
+  return `_SONG_${safe}`;
 }
 
-console.log("🎉 Done publishing to all relays!");
+function readLastPlayed() {
+  if (!fs.existsSync(LAST_PLAYED_FILE)) return null;
+  return fs.readFileSync(LAST_PLAYED_FILE, "utf-8").trim();
+}
+
+function writeLastPlayed(eventId) {
+  fs.writeFileSync(LAST_PLAYED_FILE, eventId, "utf-8");
+}
+
+// --- CLEANUP HANDLER ---
+let currentSongFile = null;
+function cleanup() {
+  if (currentSongFile && fs.existsSync(currentSongFile)) {
+    try {
+      fs.unlinkSync(currentSongFile);
+      console.log(`🗑️ Cleaned up: ${currentSongFile}`);
+    } catch (err) {
+      console.log("Cleanup error:", err.message);
+    }
+  }
+  process.exit();
+}
+process.on("SIGINT", cleanup);
+process.on("SIGTERM", cleanup);
+process.on("exit", cleanup);
+
+// --- PLAY SONG ---
+async function playSong(songName) {
+  const base = sanitizeToFilename(songName);
+  const mp3File = `${base}.mp3`;
+  currentSongFile = mp3File;
+
+  try {
+    if (!fs.existsSync(mp3File)) {
+      console.log(`⬇️ Downloading: ${songName}`);
+      const ytdlpCmd = `yt-dlp -x --audio-format mp3 --no-playlist "ytsearch1:${songName}" -o "${base}.%(ext)s"`;
+      execSync(ytdlpCmd, { stdio: "inherit" });
+
+      if (!fs.existsSync(mp3File)) {
+        console.warn(`⚠️ File ${mp3File} not found. Skipping.`);
+        return;
+      }
+      console.log(`✅ Download complete: ${mp3File}`);
+    } else {
+      console.log(`✅ Cached file found: ${mp3File}`);
+    }
+
+    console.log(`🎧 Now playing: ${songName}`);
+    execSync(`mpv --no-video "${mp3File}"`, { stdio: "inherit" });
+    console.log(`✅ Finished: ${songName}`);
+
+    fs.unlinkSync(mp3File);
+    currentSongFile = null;
+    console.log(`🗑️ Deleted: ${mp3File}`);
+  } catch (err) {
+    console.error("❌ Error in playSong:", err.message || err);
+  }
+}
+
+// --- FETCH AND PLAY LATEST COMMAND ---
+pool.subscribeMany(relays, filter, {
+  onevent(event) {
+    const content = event.content?.trim() || "";
+    if (!content.toLowerCase().startsWith("play")) return;
+
+    const lastPlayed = readLastPlayed();
+    if (event.id === lastPlayed) {
+      console.log("⚠️ This command was already played. Exiting.");
+      process.exit(0);
+    }
+
+    const songName = content.replace(/play|_SONG:|PLAY_SONG:/gi, "").trim();
+    if (!songName) return;
+
+    console.log(`🎵 New song command received: ${songName}`);
+
+    (async () => {
+      await playSong(songName);
+      writeLastPlayed(event.id);
+      console.log("📭 Done. Exiting until next command.");
+      process.exit(0);
+    })();
+  },
+  onclose(reason) {
+    console.log("🔌 Subscription closed:", reason);
+    process.exit(0);
+  },
+  oneose() {
+    console.log("📡 Finished fetching events.");
+  },
+});
