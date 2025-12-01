@@ -59,6 +59,12 @@ Optional / Recommended
 - Storage – Enough disk space to temporarily store MP3 files before playback.
 
 ---
+# .env Setup
+Create a `.env` file in the project root and add your NOSTR private key:
+
+NOSTR_PRIVATE_KEY=<your_hex_private_key>
+
+ ---
 
 ## Installation Guide
 
