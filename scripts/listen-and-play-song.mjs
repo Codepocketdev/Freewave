@@ -22,6 +22,7 @@ const relays = [
   "wss://nostr.bitcoiner.social",
   "wss://nostr.mom",
 ];
+
 const pool = new SimplePool();
 const filter = { kinds: [1], authors: [pubkey] };
 
@@ -47,16 +48,30 @@ function writeLastPlayed(eventId) {
 async function playSong(songName) {
   const base = sanitizeToFilename(songName);
   const mp3File = `${base}.mp3`;
+// delete file on exit if configured
+  const cleanup = () => {
+    if (fs.existsSync(mp3File)) {
+      fs.unlinkSync(mp3File);
+      console.log(`🗑️ Cleanup: deleted ${mp3File}`);
+    }
+    process.exit(0);
+  };
+
+  process.once("SIGINT", cleanup);
+  process.once("SIGTERM", cleanup);
+  process.once("exit", cleanup);
 
   try {
     if (!fs.existsSync(mp3File)) {
       console.log(`⬇️ Downloading: ${songName}`);
       const ytdlpCmd = `yt-dlp -x --audio-format mp3 --no-playlist "ytsearch1:${songName}" -o "${base}.%(ext)s"`;
       execSync(ytdlpCmd, { stdio: "inherit" });
+
       if (!fs.existsSync(mp3File)) {
         console.warn(`⚠️ File ${mp3File} not found. Skipping.`);
         return;
       }
+
       console.log(`✅ Download complete: ${mp3File}`);
     } else {
       console.log(`✅ Cached file found: ${mp3File}`);
@@ -66,8 +81,10 @@ async function playSong(songName) {
     execSync(`mpv --no-video "${mp3File}"`, { stdio: "inherit" });
     console.log(`✅ Finished: ${songName}`);
 
-    fs.unlinkSync(mp3File);
-    console.log(`🗑️ Deleted: ${mp3File}`);
+    if (fs.existsSync(mp3File)) {
+      fs.unlinkSync(mp3File);
+      console.log(`🗑️ Deleted: ${mp3File}`);
+    }
   } catch (err) {
     console.error("❌ Error in playSong:", err.message || err);
   }
