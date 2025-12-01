@@ -23,7 +23,7 @@ const DOWNLOAD_DIR = "./songs";
 if (!fs.existsSync(DOWNLOAD_DIR)) fs.mkdirSync(DOWNLOAD_DIR);
 
 // -------------------------
-// CLEANUP HANDLER (Susan fix)
+// CLEANUP HANDLER 
 // -------------------------
 let currentSongFile = null;
 
