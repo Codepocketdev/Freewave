@@ -58,12 +58,6 @@ Optional / Recommended
   
 - Storage – Enough disk space to temporarily store MP3 files before playback.
 
----
-# .env Setup
-Create a `.env` file in the project root and add your NOSTR private key:
-
-NOSTR_PRIVATE_KEY=<your_hex_private_key>
-
  ---
 
 ## Installation Guide
@@ -98,72 +92,39 @@ Install Node.js from nodejs.org.
 Download `yt-dlp.exe` and `mpv.exe` and add both to your PATH.
 
 
- ## Exporting Your Keys
- 
--  FreeWave never stores your keys directly inside the script. Instead, export them as environment variables to protect your privacy. You can use either your nsec key or npub key depending on your setup.
-
-1. Using an nsec Key
-
--  If you have an nsec key, convert it to hex first:
-
+ ## Converting Keys to Hex
+-  FreeWave never stores your keys directly inside the script. Instead, export them as environment variables to protect your privacy.
+-   You can use either your nsec key or npub key depending on your setup.
+Using an nsec Key
+If you have an nsec key, convert it to hex first:
 node
 
-`import { nip19 } from "nostr-tools";
-const result = nip19.decode("nsec1yourkeyhere");
-console.log(Buffer.from(result.data).toString("hex"));`
+``import { nip19 } from "nostr-tools"; const result = nip19.decode("nsec1yourkeyhere"); console.log(Buffer.from(result.data).toString("hex"));``
 
--  Then export the result:
+Then export the result:
+``export NOSTR_PRIVKEY_HEX="converted_hex_key_here"``
 
-`export NOSTR_PRIVKEY_HEX="converted_hex_key_here"`
-
-
----
-
-2. Using an npub Key
-
+Using an npub Key
 -  If you only have an npub key, you can decode it to hex using a helper script:
+Create the helper:
+``nano decode-npub.mjs``
 
-1. Create the helper:
+Paste the following:
+``#!/usr/bin/env node import { nip19 } from "nostr-tools"; // Get the npub from command line const npub = process.argv[2]; if (!npub) { console.log("Usage: decode-npub <npub>"); process.exit(1); } try { const { data: pubkeyHex } = nip19.decode(npub); console.log(pubkeyHex); } catch (err) { console.error("Failed to decode:", err.message); }``
 
+Run the script with your npub:
+``node decode-npub.mjs <npub>``
 
-
-`nano decode-npub.mjs`
-
-2. Paste the following:
-
-`#!/usr/bin/env node
-import { nip19 } from "nostr-tools";
-// Get the npub from command line
-const npub = process.argv[2];
-if (!npub) {
-  console.log("Usage: decode-npub <npub>");
-  process.exit(1);
-}
-try {
-  const { data: pubkeyHex } = nip19.decode(npub);
-  console.log(pubkeyHex);
-} catch (err) {
-  console.error("Failed to decode:", err.message);
-}`
-
-3. Run the script with your npub:
-
-
-
-`node decode-npub.mjs <npub>`
-
-4. Export the output:
-
-
-
-`export NOSTR_PUBKEY_HEX="decoded_hex_key_here"`
-
--  Now your scripts can access the keys automatically for both personal and social listening modes.
-
+Now your scripts can access the keys automatically for both personal and social listening modes.
 
 ---
+## Create .env File
+-  Create a .env file in the project root and add your NOSTR private key:
 
+``NOSTR_PRIVATE_KEY=<your_hex_private_key>``
 
+This allows FreeWave to securely access your key and ensures downloaded songs are handled properly, including automatic cleanup if playback is stopped early
+---
 ## Usage
 
 -  FreeWave provides two modes for playback:
