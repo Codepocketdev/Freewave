@@ -1,4 +1,3 @@
-
 <div align="center">
 
 # 🎵 FreeWave
@@ -23,22 +22,22 @@ FreeWave is a lightweight, open-source music player that leverages the Nostr pro
 
 ### Why FreeWave?
 
-- 🔒 **Privacy-First**: Your listening habits stay private
-- 🌐 **Decentralized**: No central authority controls your music
-- 🚫 **Censorship-Resistant**: Built on Nostr's distributed network
-- 🎨 **Creator-Friendly**: Direct connection between artists and listeners
-- 🔓 **Open Source**: Community-driven and transparent
+-  **Privacy-First**: Your listening habits stay private
+-  **Decentralized**: No central authority controls your music
+-  **Censorship-Resistant**: Built on Nostr's distributed network
+-  **Creator-Friendly**: Direct connection between artists and listeners
+-  **Open Source**: Community-driven and transparent
 
 ---
 
 ## ✨ Features
 
-- 📡 **Nostr Integration** - Listens to Nostr relays for secure, censorship-resistant song commands
-- 🎵 **Automatic Playback** - Downloads and plays songs using `yt-dlp` and `mpv`
-- 💾 **Smart Caching** - Locally caches recently played songs for faster playback
-- 👤 **Dual Modes** - Supports both personal and social listening experiences
-- 🔐 **Secure Key Management** - Uses environment variables for private key storage
-- 🧹 **Auto-Cleanup** - Automatically removes files after playback
+-  **Nostr Integration** - Listens to Nostr relays for secure, censorship-resistant song commands
+-  **Automatic Playback** - Downloads and plays songs using `yt-dlp` and `mpv`
+-  **Smart Caching** - Locally caches recently played songs for faster playback
+-  **Dual Modes** - Supports both personal and social listening experiences
+-  **Secure Key Management** - Uses environment variables for private key storage
+-  **Auto-Cleanup** - Automatically removes files after playback
 - 🎛️ **Extensible** - Easy to customize and extend for hardware projects
 
 ---
@@ -185,14 +184,14 @@ Transform FreeWave into a physical music node with these components:
 
 | Component | Use Case |
 |-----------|----------|
-| 📱 Android Phone (v13+) | Portable Nostr node via Termux |
-| 🥧 Raspberry Pi (3/4/5) | 24/7 listener with speaker output |
-| 🔌 Arduino/ESP32/ESP8266 | LED control & physical buttons |
-| 📺 OLED/LCD Display | Track information display |
-| 💡 RGB LEDs/Neopixels | Visual music feedback |
-| 🔋 Powerbank/UPS | Off-grid operation |
-| 🎚️ Rotary Encoder | Physical playback control |
-| 🔊 Mini Amplifier | Enhanced audio output |
+|  Android Phone (v13+) | Portable Nostr node via Termux |
+|  Raspberry Pi (3/4/5) | 24/7 listener with speaker output |
+|  Arduino/ESP32/ESP8266 | LED control & physical buttons |
+|  OLED/LCD Display | Track information display |
+|  RGB LEDs/Neopixels | Visual music feedback |
+|  Powerbank/UPS | Off-grid operation |
+|  Rotary Encoder | Physical playback control |
+|  Mini Amplifier | Enhanced audio output |
 
 ### Example Setup Ideas
 
@@ -209,13 +208,13 @@ We welcome contributions from the community! Here's how you can help:
 
 ### Ways to Contribute
 
-- 🐛 Report bugs and issues
-- 💡 Suggest new features
-- 📝 Improve documentation
-- 🎨 Create GUI/web interface
-- 🔧 Optimize performance
-- 🎛️ Share hardware builds
-- 🧪 Add tests
+-  Report bugs and issues
+-  Suggest new features
+-  Improve documentation
+-  Create GUI/web interface
+-  Optimize performance
+-  Share hardware builds
+-  Add tests
 
 ### Getting Started
 
