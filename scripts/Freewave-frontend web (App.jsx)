@@ -1,0 +1,221 @@
+import { useState, useEffect } from "react";
+
+export default function App() {
+  const [showLogo, setShowLogo] = useState(true); // splash screen
+  const [mode, setMode] = useState(null);
+  const [privKey, setPrivKey] = useState("");
+  const [pubKey, setPubKey] = useState("");
+  const [relays, setRelays] = useState("");
+  const [showLogs, setShowLogs] = useState(false);
+
+  // Auto-hide logo after 2 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLogo(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Splash screen
+  if (showLogo) {
+    return (
+      <div style={styles.splashContainer}>
+        <img
+          src="https://i.ibb.co/wZpB7H2g/freewave-logo.png"
+          alt="FreeWave Logo"
+          style={styles.logoImg}
+        />
+        <h1 style={styles.splashText}>FreeWave</h1>
+      </div>
+    );
+  }
+
+  return (
+    <div style={styles.fullScreenContainer}>
+      {/* Mode selection */}
+      {!mode && (
+        <div style={styles.card}>
+          <h2>Select Mode</h2>
+          <button style={styles.button} onClick={() => setMode("personal")}>
+            Personal Mode
+          </button>
+          <button style={styles.button} onClick={() => setMode("social")}>
+            Social Mode
+          </button>
+        </div>
+      )}
+
+      {/* PERSONAL MODE */}
+      {mode === "personal" && (
+        <div style={styles.card}>
+          <h2>Personal Mode</h2>
+          <p>Enter your Private HEX Key & Relays</p>
+
+          <input
+            style={styles.input}
+            placeholder="Private Key (HEX)"
+            value={privKey}
+            onChange={(e) => setPrivKey(e.target.value)}
+          />
+
+          <textarea
+            style={styles.textarea}
+            placeholder="Relays (one per line)"
+            value={relays}
+            onChange={(e) => setRelays(e.target.value)}
+          />
+
+          <button style={styles.button}>Save Settings</button>
+
+          <p style={styles.switch} onClick={() => setMode(null)}>
+            ← Back
+          </p>
+        </div>
+      )}
+
+      {/* SOCIAL MODE */}
+      {mode === "social" && (
+        <div style={styles.card}>
+          <h2>Social Mode</h2>
+          <p>Enter Public HEX Key & Relay</p>
+
+          <input
+            style={styles.input}
+            placeholder="Public Key (HEX)"
+            value={pubKey}
+            onChange={(e) => setPubKey(e.target.value)}
+          />
+
+          <textarea
+            style={styles.textarea}
+            placeholder="Relays (one per line)"
+            value={relays}
+            onChange={(e) => setRelays(e.target.value)}
+          />
+
+          <button style={styles.button}>Save Settings</button>
+
+          <p style={styles.switch} onClick={() => setMode(null)}>
+            ← Back
+          </p>
+        </div>
+      )}
+
+      {/* Logs toggle */}
+      <div style={{ marginTop: "30px" }}>
+        <label style={{ cursor: "pointer" }}>
+          <input
+            type="checkbox"
+            checked={showLogs}
+            onChange={() => setShowLogs(!showLogs)}
+          />
+          Show Backend Logs
+        </label>
+      </div>
+
+      {showLogs && (
+        <pre style={styles.logs}>
+          [LOGS WILL APPEAR HERE - Cypherpunk mode enabled]
+        </pre>
+      )}
+    </div>
+  );
+}
+
+const styles = {
+  splashContainer: {
+    fontFamily: "sans-serif",
+    textAlign: "center",
+    color: "#000", // Black text
+    background: "#fff", // White background
+    minHeight: "100vh",
+    width: "100vw",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "20px",
+    boxSizing: "border-box"
+  },
+  splashText: {
+    fontSize: "8vw",
+    maxFontSize: "60px",
+    marginTop: "20px"
+  },
+  fullScreenContainer: {
+    fontFamily: "sans-serif",
+    textAlign: "center",
+    color: "#eee",
+    background: "#111",
+    minHeight: "100vh",
+    width: "100vw",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "20px",
+    boxSizing: "border-box"
+  },
+  logoImg: {
+    width: "40vw", // scalable for mobile & desktop
+    maxWidth: "400px",
+    height: "auto",
+    marginBottom: "20px"
+  },
+  card: {
+    background: "#222",
+    padding: "30px",
+    borderRadius: "10px",
+    width: "90%",
+    maxWidth: "600px",
+    flex: "1",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    margin: "10px 0",
+    boxSizing: "border-box"
+  },
+  input: {
+    width: "100%",
+    padding: "12px",
+    margin: "12px 0",
+    borderRadius: "5px",
+    border: "none",
+    boxSizing: "border-box"
+  },
+  textarea: {
+    width: "100%",
+    height: "120px",
+    padding: "12px",
+    margin: "12px 0",
+    borderRadius: "5px",
+    border: "none",
+    boxSizing: "border-box"
+  },
+  button: {
+    width: "100%",
+    padding: "12px",
+    background: "#444",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    marginTop: "15px"
+  },
+  switch: {
+    marginTop: "15px",
+    cursor: "pointer",
+    color: "#aaa"
+  },
+  logs: {
+    marginTop: "20px",
+    padding: "12px",
+    background: "#000",
+    color: "#0f0",
+    textAlign: "left",
+    borderRadius: "5px",
+    width: "90%",
+    maxWidth: "800px",
+    margin: "20px auto",
+    overflowX: "auto",
+    boxSizing: "border-box"
+  }
+};

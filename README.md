@@ -1,312 +1,255 @@
-# 🎵 FreeWave  
-**A Nostr-Based Open Music Player**
+<div align="center">
 
-FreeWave is a lightweight, open-source ,decentralized, peer-to-peer music player that empowers creators and listeners by leveraging Nostr for event distribution and yt-dlp for music content, FreeWave delivers a censorship-resistant, privacy-first listening experience. It supports both personal and social modes, ensuring secure playback, creator control, and freedom from reliance on centralized platforms.
+# 🎵 FreeWave
 
----
+### A Nostr-Based Decentralized Music Player
 
-##  Features
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
--  Listens to Nostr relays for secure, censorship-resistant song commands.
-  
--  Automatically downloads and plays songs using `yt-dlp` and `mpv`.
- 
--  Caches recently played songs locally to optimize playback speed.
+*Your keys. Your music. Your freedom.*
 
--  Supports both personal and social listening modes.
-  
--  Uses exported private keys—no sensitive keys stored directly in the code.
- 
--  Fully open-source, extensible, and community-driven.
-  
--  Privacy-first design ensures user and creator control without centralized intermediaries.
+[Features](#features) • [Quick Start](#quick-start) • [Documentation](#usage) • [Contributing](#contributing)
 
-
-##  How It Works
-
--  FreeWave monitors Nostr events that begin with a command prefix, such as:
-  PLAY_SONG: (song name and artist)
--  Upon receiving a valid command, it:
-Securely identifies the song .
-
--  Downloads the audio as an MP3 using yt-dlp.
- 
--  Plays the track locally with mpv, keeping playback private and on-device.
-  
--  Deletes the file after playback to conserve storage.
-   
--  All communication is encrypted and decentralized, ensuring censorship-resistant, privacy-first music delivery.
+</div>
 
 ---
 
-##  Requirements
-To run FreeWave, ensure your environment includes:
--  Node.js v18+ – FreeWave is written in JavaScript (ES Modules), so you need Node.js to execute it.
-  
--  npm – Comes with Node.js; needed to install dependencies.
-  
--  yt-dlp – Command-line tool to fetch songs .
-  
--  mpv – Media player to play the downloaded audio locally.
-  
--  Internet connection – Required to fetch songs and receive Nostr events.
- 
-Optional / Recommended
--  pm2 – To keep FreeWave running in the background continuously.
-  
--  Speakers or audio output device – Without a way to play audio, the script can’t serve its main purpose.
-  
-- Storage – Enough disk space to temporarily store MP3 files before playback.
+## 📖 About
+
+FreeWave is a lightweight, open-source music player that leverages the Nostr protocol for decentralized, censorship-resistant music distribution. By combining Nostr events with `yt-dlp` for content retrieval, FreeWave delivers a privacy-first listening experience free from centralized platforms.
+
+### Why FreeWave?
+
+-  **Privacy-First**: Your listening habits stay private
+-  **Decentralized**: No central authority controls your music
+-  **Censorship-Resistant**: Built on Nostr's distributed network
+-  **Creator-Friendly**: Direct connection between artists and listeners
+-  **Open Source**: Community-driven and transparent
 
 ---
 
-## Installation Guide
+## ✨ Features
 
-1️⃣ Clone the Repository
+-  **Nostr Integration** - Listens to Nostr relays for secure, censorship-resistant song commands
+-  **Automatic Playback** - Downloads and plays songs using `yt-dlp` and `mpv`
+-  **Smart Caching** - Locally caches recently played songs for faster playback
+-  **Dual Modes** - Supports both personal and social listening experiences
+-  **Secure Key Management** - Uses environment variables for private key storage
+-  **Auto-Cleanup** - Automatically removes files after playback
+- 🎛️ **Extensible** - Easy to customize and extend for hardware projects
 
-``git clone https://github.com/Codepocketdev/FreeWave.git
-cd FreeWave``
+---
 
+## 🚀 Quick Start
 
+### Prerequisites
 
-2️⃣ Install Dependencies
+Before installing FreeWave, ensure you have:
 
-`npm install`
+| Requirement | Version | Purpose |
+|------------|---------|---------|
+| [Node.js](https://nodejs.org/) | ≥18.0 | Runtime environment |
+| npm | (bundled) | Package management |
+| [yt-dlp](https://github.com/yt-dlp/yt-dlp) | latest | Audio fetching |
+| [mpv](https://mpv.io/) | latest | Audio playback |
 
-3️⃣ Install System Tools
+### Installation
 
-Ubuntu / Debian:
+#### 1. Clone the Repository
 
-`sudo apt update
+```bash
+git clone https://github.com/Codepocketdev/FreeWave.git
+cd FreeWave
+```
+
+#### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+#### 3. Install System Tools
+
+<details>
+<summary><b>Ubuntu / Debian</b></summary>
+
+```bash
+sudo apt update
 sudo apt install mpv python3-pip -y
-pip3 install yt-dlp`
+pip3 install yt-dlp
+```
+</details>
 
-macOS:
+<details>
+<summary><b>macOS</b></summary>
 
-`brew install mpv yt-dlp`
+```bash
+brew install mpv yt-dlp
+```
+</details>
 
-Windows:
+<details>
+<summary><b>Windows</b></summary>
 
-Install Node.js from nodejs.org.
+1. Install [Node.js](https://nodejs.org/)
+2. Download [yt-dlp.exe](https://github.com/yt-dlp/yt-dlp/releases)
+3. Download [mpv.exe](https://mpv.io/installation/)
+4. Add both to your PATH
+</details>
 
-Download `yt-dlp.exe` and `mpv.exe` and add both to your PATH.
+#### 4. Configure Environment
 
+Create a `.env` file in the project root:
 
- ## Exporting Your Keys
- 
--  FreeWave never stores your keys directly inside the script. Instead, export them as environment variables to protect your privacy. You can use either your nsec key or npub key depending on your setup.
+```env
+NOSTR_PRIVATE_KEY=<your_hex_private_key>
+```
 
-1. Using an nsec Key
+<details>
+<summary><b>Converting Keys to Hex</b></summary>
 
--  If you have an nsec key, convert it to hex first:
-
-node
-
-`import { nip19 } from "nostr-tools";
-const result = nip19.decode("nsec1yourkeyhere");
-console.log(Buffer.from(result.data).toString("hex"));`
-
--  Then export the result:
-
-`export NOSTR_PRIVKEY_HEX="converted_hex_key_here"`
-
-
----
-
-2. Using an npub Key
-
--  If you only have an npub key, you can decode it to hex using a helper script:
-
-1. Create the helper:
-
-
-
-`nano decode-npub.mjs`
-
-2. Paste the following:
-
-`#!/usr/bin/env node
+**From nsec key:**
+```javascript
 import { nip19 } from "nostr-tools";
-// Get the npub from command line
-const npub = process.argv[2];
-if (!npub) {
-  console.log("Usage: decode-npub <npub>");
-  process.exit(1);
-}
-try {
-  const { data: pubkeyHex } = nip19.decode(npub);
-  console.log(pubkeyHex);
-} catch (err) {
-  console.error("Failed to decode:", err.message);
-}`
+const result = nip19.decode("nsec1yourkeyhere");
+console.log(Buffer.from(result.data).toString("hex"));
+```
 
-3. Run the script with your npub:
+**From npub key:**
+```bash
+# Create decode-npub.mjs
+nano decode-npub.mjs
 
-
-
-`node decode-npub.mjs <npub>`
-
-4. Export the output:
-
-
-
-`export NOSTR_PUBKEY_HEX="decoded_hex_key_here"`
-
--  Now your scripts can access the keys automatically for both personal and social listening modes.
-
+# Run the decoder
+node decode-npub.mjs <your_npub>
+```
+</details>
 
 ---
 
+## 📚 Usage
 
-## Usage
+### Personal Mode
 
--  FreeWave provides two modes for playback:
+Perfect for local terminal-based playback.
 
-1️⃣ Personal Mode (Terminal)
+**Send a song command:**
+```bash
+node scripts/send-song-command.mjs "Song by Artist"
+```
 
--  This mode is ideal if you want to publish and play songs from a local terminal (Ubuntu, Termux, macOS, etc.).
+**Start the listener:**
+```bash
+node scripts/listen-and-play-song.mjs
+```
 
--  Publisher Script – Use this to send a song command:
+### Social Mode
 
+Listen to songs from a specific Nostr user.
 
-`node scripts/send-song-command.mjs "Song by artist"`
+```bash
+node scripts/social-listen-play.mjs <artist_npub> <relay_url>
+```
 
--  Listener & Player Script – Use this to receive and play the song locally:
-
-
-`node scripts/listen-and-play-song.mjs`
-
--  The listener automatically downloads the song and plays it locally, and deletes it after playback.
-
-
-
-
----
-
-2️⃣ Social Mode (Any Nostr Client)
-
--  This mode allows you to listen to commands sent from a specific Nostr user on a chosen relay. Only new commands from that user are processed and verified, preventing spam.
-
-`node scripts/social-listen-play.mjs <artist_npub> <relay_url>`
-
-
--  Only commands from the specified npub and relay will be played.
-
-
-
+**Example:**
+```bash
+node scripts/social-listen-play.mjs npub1abc... wss://relay.damus.io
+```
 
 ---
 
-Folder Structure
+## 📁 Project Structure
 
-`FreeWave/
+```
+FreeWave/
 ├── scripts/
-│   ├── send-song-command.mjs       # Personal mode: publisher
-│   ├── listen-and-play-song.mjs   # Personal mode: listener & player
+│   ├── send-song-command.mjs      # Personal mode publisher
+│   ├── listen-and-play-song.mjs   # Personal mode listener
 │   └── social-listen-play.mjs     # Social mode listener
-├── package.json
+├── .env                            # Environment configuration
 ├── .gitignore
-└── README.md`
-
-
----
-
- ## Gadgets & Hardware Setup (Optional)
-
--  You can take FreeWave beyond the terminal and create your own portable or interactive music node. Here’s how:
-
--  Old Android Phone  version 13+ – Run FreeWave via Termux  as a portable Nostr node.
-
--  Raspberry Pi (3,4,5) – 24/7 listener connected to a speaker or display.
-
--  Arduino / ESP32 / ESP8266 – Control LEDs, buttons, or other visual indicators.
-
--  OLED / LCD Display – Show current track name, artist, or relay information.
-
--  RGB LEDs or Neopixels – Flash, pulse, or animate to the music beat.
-
--  Powerbank or UPS – Run your setup off-grid.
-
--  WiFi Dongle / Ethernet – Ensure a stable network connection.
-
--  Buttons / Rotary Knob – Control play, pause, or skip tracks directly.
-
--  Mini Amplifier (PAM8403) – Boost small speaker setups.
-
--  3D-Printed Case – Give your FreeWave node a futuristic, custom look.
-
-
+├── package.json
+└── README.md
+```
 
 ---
 
-How to Make It Interactive
+## 🛠️ Hardware Projects
 
-Bring your FreeWave node to life with real-time interaction:
+Transform FreeWave into a physical music node with these components:
 
-1. Light Shows – Use an ESP32 or similar board to detect new song events and trigger LED effects.
+### Supported Hardware
 
+| Component | Use Case |
+|-----------|----------|
+|  Android Phone (v13+) | Portable Nostr node via Termux |
+|  Raspberry Pi (3/4/5) | 24/7 listener with speaker output |
+|  Arduino/ESP32/ESP8266 | LED control & physical buttons |
+|  OLED/LCD Display | Track information display |
+|  RGB LEDs/Neopixels | Visual music feedback |
+|  Powerbank/UPS | Off-grid operation |
+|  Rotary Encoder | Physical playback control |
+|  Mini Amplifier | Enhanced audio output |
 
-2. Track Display – Connect an OLED or LCD to show the current track, artist, and relay name.
+### Example Setup Ideas
 
-
-3. Physical Controls – Add buttons, knobs, or switches to control playback through simple serial commands.
-
-
--  With these additions, FreeWave becomes a smart, physical music player powered by Nostr, combining software freedom with tangible interactivity.
-
-
-
-
+- **LED Visualizer**: Sync RGB strips to song changes
+- **Track Display**: Show current song info on OLED screen
+- **Physical Controls**: Add buttons for play/pause/skip
+- **Portable Node**: Battery-powered Raspberry Pi in custom enclosure
 
 ---
 
-## package.json (For Reference)
+## 🤝 Contributing
 
--  This file defines FreeWave as a Node.js project, lists its dependencies, and provides convenient scripts for running both personal and social listening modes.
+We welcome contributions from the community! Here's how you can help:
 
--   It ensures the project is easy to install, start, and maintain.
-   
-`{
-  "name": "freewave",
-  "version": "1.0.0",
-  "description": "Nostr-based music player that listens for song commands",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "start-listener": "node scripts/listen-and-play-song.mjs",
-    "send-song": "node scripts/send-song-command.mjs"
-  },
-  "keywords": ["nostr", "music", "player", "youtube", "yt-dlp"],
-  "author": "<Your Name or Handle>",
-  "license": "ISC",
-  "dependencies": {
-    "nostr-tools": "^2.17.2"
-  }
-}`
+### Ways to Contribute
 
+-  Report bugs and issues
+-  Suggest new features
+-  Improve documentation
+-  Create GUI/web interface
+-  Optimize performance
+-  Share hardware builds
+-  Add tests
 
+### Getting Started
 
-## Contributing
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
--  FreeWave is community-driven — everyone is welcome to fork the repository, report issues, or submit pull requests.
+---
 
-Ways to contribute:
+## 📜 License
 
--  Add a GUI or web dashboard for easier control
+This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
 
--  Implement LED or display sync effects for hardware setups
+---
 
--  Integrate additional Nostr event types or improve the social mode
+## 🌟 Support
 
--  Optimize performance, caching, or cross-platform compatibility
+If you find FreeWave useful, please consider:
 
--  Create themed hardware builds or share setup guides
+- ⭐ Starring the repository
+- 🐦 Sharing on social media
+- 🤝 Contributing to the project
+- 💬 Joining the discussion on Nostr
 
--  Improve documentation, examples, or tutorials for new users
+---
 
+<div align="center">
 
-We encourage experimentation and creativity — your improvements can help make FreeWave more versatile, fun, and user-friendly for everyone.
+### "Let the music flow freely across the network"
 
- “Let the music flow freely across the network — this is the wave of sound, not control.”
+**Made with ❤️ by the FreeWave community**
 
-Your keys your music
+[Report Bug](https://github.com/Codepocketdev/FreeWave/issues) • [Request Feature](https://github.com/Codepocketdev/FreeWave/issues) • [Nostr Community](https://nostr.com)
+
+</div>
+```
