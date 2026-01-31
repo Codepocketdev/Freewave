@@ -2,7 +2,7 @@
 import { Relay, getPublicKey, finalizeEvent } from "nostr-tools";
 
 // ----------------- YOUR HEX PRIVATE KEY -----------------
-const myHexPrivKey = "<Your hex key>"; 
+const myHexPrivKey = "3e9be79584b215f2eca59412fd80ebcb8ece5b1bac38be34b29c3ea9281b9e5c"; 
 // --------------------------------------------------------
 
 // Get public key directly from hex
