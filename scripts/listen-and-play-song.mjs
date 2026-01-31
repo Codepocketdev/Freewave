@@ -2,19 +2,20 @@
 import { getPublicKey, SimplePool } from "nostr-tools";
 import { execSync } from "child_process";
 import fs from "fs";
-import 'dotenv/config'; // loads .env automatically
+import 'dotenv/config';
 
 // --- CONFIG ---
 const sk = process.env.NOSTR_PRIVATE_KEY;
 if (!sk) {
-  console.error("❌ Please set your NOSTR_PRIVATE_KEY environment variable!");
+  console.error("[ERROR] Please set your NOSTR_PRIVATE_KEY environment variable!");
   process.exit(1);
 }
 
 const pubkey = getPublicKey(sk);
 const LAST_PLAYED_FILE = "./last_song.txt";
+const COOKIES_FILE = `${process.env.HOME}/youtube_cookies.txt`;
 
-console.log("🎯 Fetching latest song command for:", pubkey);
+console.log("[INIT] Fetching latest song command for:", pubkey);
 
 const relays = [
   "wss://nostr.oxtr.dev",
@@ -22,6 +23,7 @@ const relays = [
   "wss://nostr.bitcoiner.social",
   "wss://nostr.mom",
 ];
+
 const pool = new SimplePool();
 const filter = { kinds: [1], authors: [pubkey] };
 
@@ -48,28 +50,45 @@ async function playSong(songName) {
   const base = sanitizeToFilename(songName);
   const mp3File = `${base}.mp3`;
 
+  const cleanup = () => {
+    if (fs.existsSync(mp3File)) {
+      fs.unlinkSync(mp3File);
+      console.log(`[CLEANUP] Deleted ${mp3File}`);
+    }
+    process.exit(0);
+  };
+
+  process.once("SIGINT", cleanup);
+  process.once("SIGTERM", cleanup);
+  process.once("exit", cleanup);
+
   try {
     if (!fs.existsSync(mp3File)) {
-      console.log(`⬇️ Downloading: ${songName}`);
-      const ytdlpCmd = `yt-dlp -x --audio-format mp3 --no-playlist "ytsearch1:${songName}" -o "${base}.%(ext)s"`;
+      console.log(`[DOWNLOAD] Downloading: ${songName}`);
+      
+      const ytdlpCmd = `yt-dlp --cookies "${COOKIES_FILE}" -x --audio-format mp3 --no-playlist "ytsearch1:${songName}" -o "${base}.%(ext)s"`;
       execSync(ytdlpCmd, { stdio: "inherit" });
+
       if (!fs.existsSync(mp3File)) {
-        console.warn(`⚠️ File ${mp3File} not found. Skipping.`);
+        console.warn(`[WARNING] File ${mp3File} not found. Skipping.`);
         return;
       }
-      console.log(`✅ Download complete: ${mp3File}`);
+
+      console.log(`[SUCCESS] Download complete: ${mp3File}`);
     } else {
-      console.log(`✅ Cached file found: ${mp3File}`);
+      console.log(`[CACHE] Cached file found: ${mp3File}`);
     }
 
-    console.log(`🎧 Now playing: ${songName}`);
+    console.log(`[PLAYING] Now playing: ${songName}`);
     execSync(`mpv --no-video "${mp3File}"`, { stdio: "inherit" });
-    console.log(`✅ Finished: ${songName}`);
+    console.log(`[COMPLETE] Finished: ${songName}`);
 
-    fs.unlinkSync(mp3File);
-    console.log(`🗑️ Deleted: ${mp3File}`);
+    if (fs.existsSync(mp3File)) {
+      fs.unlinkSync(mp3File);
+      console.log(`[CLEANUP] Deleted: ${mp3File}`);
+    }
   } catch (err) {
-    console.error("❌ Error in playSong:", err.message || err);
+    console.error("[ERROR] Error in playSong:", err.message || err);
   }
 }
 
@@ -81,27 +100,27 @@ pool.subscribeMany(relays, filter, {
 
     const lastPlayed = readLastPlayed();
     if (event.id === lastPlayed) {
-      console.log("⚠️ This command was already played. Exiting.");
+      console.log("[SKIP] This command was already played. Exiting.");
       process.exit(0);
     }
 
     const songName = content.replace(/play|_SONG:|PLAY_SONG:/gi, "").trim();
     if (!songName) return;
 
-    console.log(`🎵 New song command received: ${songName}`);
+    console.log(`[COMMAND] New song command received: ${songName}`);
 
     (async () => {
       await playSong(songName);
       writeLastPlayed(event.id);
-      console.log("📭 Done. Exiting until next command.");
+      console.log("[DONE] Playback complete. Exiting until next command.");
       process.exit(0);
     })();
   },
   onclose(reason) {
-    console.log("🔌 Subscription closed:", reason);
+    console.log("[CLOSED] Subscription closed:", reason);
     process.exit(0);
   },
   oneose() {
-    console.log("📡 Finished fetching events.");
+    console.log("[SYNC] Finished fetching events.");
   },
 });
